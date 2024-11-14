@@ -54,7 +54,6 @@ export class HomeComponent {
             type == 'category' ? { name: m.strCategory } : { name: m.strArea }
           ),
         }));
-        console.log(data);
       },
       (err: any) => {
         console.log(err);
