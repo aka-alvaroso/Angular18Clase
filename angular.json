@@ -25,7 +25,7 @@
               }
             ],
             "styles": ["src/styles.css"],
-            "scripts": []
+            "scripts": ["public/js/8796d23a0a.js"]
           },
           "configurations": {
             "production": {

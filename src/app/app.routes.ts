@@ -34,6 +34,13 @@ export const routes: Routes = [
       ),
   },
   {
+    path: 'favorite/:id',
+    loadComponent: () =>
+      import('./pages/view-favorite/view-favorite.component').then(
+        (m) => m.ViewFavoriteComponent
+      ),
+  },
+  {
     path: 'recipe/:id',
     loadComponent: () =>
       import('./pages/view-recipe/view-recipe.component').then(

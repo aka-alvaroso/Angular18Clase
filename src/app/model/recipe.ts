@@ -1,7 +1,8 @@
 export interface Recipe {
+  idMeal: string;
   strMeal: string;
   strMealThumb?: string;
-  strIntrctions: string;
+  strInstructions: string;
   strYoutube?: string;
   strIngredients: string;
 }

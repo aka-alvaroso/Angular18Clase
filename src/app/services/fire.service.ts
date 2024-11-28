@@ -28,31 +28,35 @@ export class FireService {
     return this.itemCollection.add(recipe);
   }
 
-  deteleRecipe(id: string): Promise<void> {
+  deleteRecipe(id: string): Promise<void> {
     return this.itemCollection.doc(id).delete();
   }
 
-  // update todo
+  editRecipe(id: string, recipe: Recipe): Promise<void> {
+    return this.itemCollection.doc(id).update(recipe);
+  }
 
+  getRecipesById(id: string): Observable<Recipe> {
+    console.log('GET RECIPES BY ID');
+    console.log(id);
+
+    return this.itemCollection.doc(id).valueChanges();
+  }
+
+  //update to do
   getRecipes(): Observable<Recipe[]> {
     return this.items$;
   }
 
-  getRecipeById(id: string): Observable<Recipe> {
-    return this.itemCollection.doc(id).valueChanges();
-  }
-
   getRecipesWithID() {
     return this.itemCollection.snapshotChanges().pipe(
-      map((actions: any) => {
-        return {
-          meals: actions.map((a: any) => {
-            const data = a.payload.doc.data() as Recipe;
-            const idMeal = a.payload.doc.id; // Obtener el ID del documento
-            return { idMeal: idMeal, ...data }; // Devolver el ID junto con los datos
-          }),
-        };
-      })
+      map((actions: any) =>
+        actions.map((a: any) => {
+          const data = a.payload.doc.data() as Recipe;
+          const id = a.payload.doc.id; // Obtener el ID del documento
+          return { id: id, ...data }; // Devolver el ID junto con los datos
+        })
+      )
     );
   }
 }

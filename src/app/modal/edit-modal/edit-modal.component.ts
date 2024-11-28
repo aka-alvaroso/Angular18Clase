@@ -3,6 +3,7 @@ import {
   EventEmitter,
   HostListener,
   inject,
+  input,
   Input,
   Output,
 } from '@angular/core';
@@ -16,21 +17,30 @@ import {
   Validators,
 } from '@angular/forms';
 import { FireService } from '../../services/fire.service';
+import { Recipe } from '../../model/recipe';
+import { of } from 'rxjs';
+import { ApiService } from '../../services/api.service';
 
 @Component({
-  selector: 'app-form-modal',
+  selector: 'app-edit-modal',
   standalone: true,
   imports: [FormsModule, ReactiveFormsModule],
-  templateUrl: './form-modal.component.html',
-  styleUrl: './form-modal.component.css',
+  templateUrl: './edit-modal.component.html',
+  styleUrl: './edit-modal.component.css',
 })
-export class FormModalComponent {
+export class EditModalComponent {
   @Input() isOpen = false;
   @Output() onClose = new EventEmitter<any>();
+
+  @Input()
+  id: any;
+
+  //nuevoid = input.required();
 
   fb = inject(FormBuilder);
   recipeForm!: FormGroup;
   fire = inject(FireService);
+  data: any;
 
   constructor() {
     this.recipeForm = this.fb.group({
@@ -43,6 +53,10 @@ export class FormModalComponent {
       strYoutube: new FormControl(''),
       strIngredients: new FormControl('', [Validators.required]),
     });
+  }
+
+  ngOnChanges() {
+    this.loadRecipe();
   }
 
   closeModal() {
@@ -60,15 +74,26 @@ export class FormModalComponent {
       this.closeModal();
     }
   }
-
-  async createRecipe() {
+  async loadRecipe() {
+    //this.isLoading = true;
+    console.log(this.id);
+    try {
+      this.fire.getRecipesById(this.id).subscribe((recipe) => {
+        this.recipeForm.patchValue(recipe);
+      });
+    } catch (err) {
+      console.log(err);
+    }
+  }
+  async editRecipe() {
     if (this.recipeForm.invalid) {
       return;
     }
 
     try {
+      let idMeal = Math.random().toString(36).substring(2, 15);
       let recipe = {
-        idMeal: Math.random().toString(36).substring(2, 15),
+        idMeal: idMeal,
         strMeal: this.recipeForm.value.strMeal,
         strMealThumb: this.recipeForm.value.strMealThumb,
         strInstructions: this.recipeForm.value.strInstructions,
@@ -78,9 +103,9 @@ export class FormModalComponent {
 
       // alert(recipe.strInstructions);
 
-      let recipeRef = await this.fire.createRecipe(recipe);
-      this.recipeForm.reset();
-      this.closeModal();
+      this.fire.editRecipe(this.id, recipe).then(() => {
+        this.closeModal();
+      });
     } catch (error) {
       alert('Error' + error);
     }
